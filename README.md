@@ -50,7 +50,7 @@ cd scripts
 ./cleanup.sh
 ./build.sh
 ```
-After this ready compiled binary file containing the system will be located in kernel/bin directory.
+After executing those commands, a ready compiled binary file containing the system will be located in kernel/bin directory.
 
 You can run this binary on a emulator. This system is tested to work on quemu emulator. You can automaticly build and run simulation using sim.sh script.
 

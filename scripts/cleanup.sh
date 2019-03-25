@@ -11,3 +11,5 @@ mkdir sysroot/usr
 mkdir sysroot/usr/include
 mkdir sysroot/usr/lib
 mkdir sysroot/boot
+mkdir kernel/bin
+mkdir libc/bin
