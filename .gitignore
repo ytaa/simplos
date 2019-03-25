@@ -1,0 +1,8 @@
+*.o
+*.out
+*.log
+*.bin
+*.a
+*.iso
+sysroot
+
