@@ -20,7 +20,7 @@ texinfo
 ```
 Next you will need to download the sources for [GNU Binutils](https://www.gnu.org/software/binutils) and [GCC](https://www.gnu.org/software/gcc). You can get them from offical project sites. You have to make sure that the versions of soruces are compatible with installed dependencies. The versions tested to work well with eachother are binutils-2.31.1 and gcc-6.5.0. 
 
-After downloading and decompressing the sources you are ready to build your cross-compiler. First you need to chose where to install the complier. In this example we will youse $HOME/opt/cross. We will start with configuaring build for Binutils and then using generated makefiles to build and install them. Next we will do the same with GCC. An example of code that can build the cross-compiler is shown below.
+After downloading and decompressing the sources you are ready to build your cross-compiler. First you need to chose where to install the complier. In this example we will use $HOME/opt/cross. We will start with configuaring build for Binutils and then using generated makefiles to build and install them. Next we will do the same with GCC. An example of code that can build the cross-compiler, assuming the sources are located at $HOME/src, is shown below.
 
 ```bash
 export PATH="$HOME/opt/cross/bin:$PATH"
@@ -42,7 +42,7 @@ make install-target-libgcc
 ```
 
 ### Installing
-Now you are ready to build the operating system. After cloning the repository, you can use bash scripts located in scripts directory. Make sure all the files are executable. To build the operating system update the create_env_variables.sh script to contain path to your cross-compiler and then run following commands:
+Now you are ready to build the operating system. After cloning the repository, you can use bash scripts located in scripts directory. Make sure all the files are executable. To build the operating system, update the create_env_variables.sh script to contain path to your cross-compiler and sysroot, and then run following commands:
 
 ```bash
 cd scripts
