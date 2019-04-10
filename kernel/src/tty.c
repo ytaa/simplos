@@ -142,8 +142,9 @@ void tty_put_char(char c){
 }
 
 void tty_write(const char* data, size_t size) {
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++){
 		tty_put_char(data[i]);
+	}
 }
 
 void tty_write_string(const char* str) {

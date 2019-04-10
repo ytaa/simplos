@@ -6,6 +6,7 @@
 
 #define TTY_WIDTH VGA_WIDTH
 #define TTY_HEIGHT 10000
+#define TTY_TAB_SIZE 5
 
 void tty_init(void);
 void tty_set_char_color(vga_color color);

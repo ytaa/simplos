@@ -1,7 +1,7 @@
 #ifndef _STDIO_H
 #define _STDIO_H 1
 
-#define EOF (-1)
+#include <kernel/ps2/keyboard.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,6 +10,7 @@ extern "C" {
 int printf(const char*, ...);
 int putchar(int);
 int puts(const char*);
+int getchar();
 
 #ifdef __cplusplus
 }
