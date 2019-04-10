@@ -37,6 +37,22 @@ gdtr:
   .2byte gdt_end - gdt_start - 1
   .4byte gdt_start
 
+.section .isr
+.global isr_irq1
+.global isr_idt_load
+.global isr_irq1_handler
+.extern isr_irq1_handler
+isr_irq1:
+  pusha
+  call isr_irq1_handler
+  popa
+  iret
+isr_idt_load:
+  mov 4(%esp), %edx
+	lidt (%edx)
+	sti
+	ret
+
 //allocating 16 KiB for kernel stack
 .section .bss
 .align 16
@@ -54,12 +70,12 @@ bootloader will jump to this position once the kernel has been loaded.
 _start:
   //setup GDT
   lgdt (gdtr)
-  mov %ax, 0x10
-  mov %ds, %ax
-  mov %es, %ax
-  mov %fs, %ax
-  mov %gs, %ax
-  mov %ss, %ax
+  mov $0x0010, %eax
+  mov %eax, %ds
+  mov %eax, %es
+  mov %eax, %gs
+  mov %eax, %fs
+  mov %eax, %ss
   jmp $0x08,$flush_cs
   flush_cs:
 

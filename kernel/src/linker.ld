@@ -8,6 +8,7 @@ SECTIONS
 	{
 		*(.multiboot)
 		*(.gdt)
+		*(.isr)
 		*(.text)
 	}
 
