@@ -38,10 +38,18 @@ gdtr:
   .4byte gdt_start
 
 .section .isr
-.global isr_irq1
 .global isr_idt_load
+.global isr_irq0
+.global isr_irq0_handler
+.extern isr_irq0_handler
+.global isr_irq1
 .global isr_irq1_handler
 .extern isr_irq1_handler
+isr_irq0:
+  pusha
+  call isr_irq0_handler
+  popa
+  iret
 isr_irq1:
   pusha
   call isr_irq1_handler
