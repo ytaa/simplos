@@ -1,4 +1,5 @@
 BIN=$$DEVOS_NAME.bin
+OUTPUT_DIR=bin/
 INCLUDE = -Iinclude
 LIBS = -nostdlib -lc -lgcc
 
@@ -6,14 +7,14 @@ CFLAGS?=-O2
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra 
 
 SOURCES = $(wildcard ./src/*.c)
-OBJECTS = $(SOURCES:.c=.o)
-DEPS = $(wildcard ./include/*.h)
-DEPS := $(DEPS) $(wildcard ./include/*/*.h)
+ASM_SOURCES = $(wildcard ./src/*.s)
+OBJECTS = $(SOURCES:.c=.o) $(ASM_SOURCES:.s=.o)
+DEPS = $(wildcard ./include/*.h) $(wildcard ./include/*/*.h) $(wildcard ./include/*/*/*.h)
 
-bin/$(BIN): $(OBJECTS) src/boot.o
-	$(CC) -T src/linker.ld -o bin/$(BIN) $(CFLAGS) $(OBJECTS) src/boot.o $(LIBS)
+$(OUTPUT_DIR)$(BIN): $(OBJECTS)
+	$(CC) -T src/linker.ld -o $(OUTPUT_DIR)$(BIN) $(CFLAGS) $(OBJECTS) $(LIBS)
 
-src/boot.o: src/boot.s
+%.o: %.s $(DEPS) 
 	$(AS) $< -o $@
 
 %.o: %.c $(DEPS)

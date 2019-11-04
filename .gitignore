@@ -4,5 +4,7 @@
 *.bin
 *.a
 *.iso
+.vscode/*
+kernel/iso/*
 sysroot
 
