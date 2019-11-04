@@ -9,9 +9,13 @@
 #define TTY_TAB_SIZE 5
 
 void tty_init(void);
+void tty_reset(void);
 void tty_set_char_color(vga_color color);
 void tty_set_background_color(vga_color color);
 void tty_set_vga_color(vga_color char_color, vga_color background_color);
+void tty_enable_vga_cursor(uint8_t start, uint8_t end);
+void tty_disable_vga_cursor();
+void tty_set_vga_cursor_pos(int row, int col);
 size_t tty_get_scroll_vertical();
 size_t tty_get_scroll_horizontal();
 void tty_scroll_up(size_t amount);
