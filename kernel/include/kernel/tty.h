@@ -7,6 +7,8 @@
 #define TTY_WIDTH VGA_WIDTH
 #define TTY_HEIGHT 10000
 #define TTY_TAB_SIZE 5
+#define TTY_DEFAULT_CHAR_COLOR VGA_COLOR_LIGHT_GREY
+#define TTY_DEFAULT_BACKGROUND_COLOR VGA_COLOR_BLACK
 
 void tty_init(void);
 void tty_reset(void);

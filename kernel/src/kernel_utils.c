@@ -9,7 +9,6 @@ void kuts_sleep(uint64_t sleep_ms) {
 
     do {
         pitt_get_current_milisecond(&current_ms);
-
     } while (sleep_ms > kuts_calc_ms_diff(start_ms, current_ms));
 }
 

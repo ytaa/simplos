@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 ps2k_key keys[256];
-char in_buffer[IN_BUFFER_SIZE];
+char in_buffer[PS2K_IN_BUFFER_SIZE];
 unsigned int in_buffer_start;
 unsigned int in_buffer_end;
 int is_buffering;
@@ -289,20 +289,20 @@ void ps2k_init() {
     keys[PS2K_KEYCODE_SPACE].s_ascii = 32;
 
     keys[PS2K_KEYCODE_UP].pressed = 0;
-    keys[PS2K_KEYCODE_UP].ascii = 0;
-    keys[PS2K_KEYCODE_UP].s_ascii = 0;
+    keys[PS2K_KEYCODE_UP].ascii = PS2K_UP_MAP_ASCII;
+    keys[PS2K_KEYCODE_UP].s_ascii = PS2K_UP_MAP_ASCII;
 
     keys[PS2K_KEYCODE_DOWN].pressed = 0;
-    keys[PS2K_KEYCODE_DOWN].ascii = 0;
-    keys[PS2K_KEYCODE_DOWN].s_ascii = 0;
+    keys[PS2K_KEYCODE_DOWN].ascii = PS2K_DOWN_MAP_ASCII;
+    keys[PS2K_KEYCODE_DOWN].s_ascii = PS2K_DOWN_MAP_ASCII;
 
     keys[PS2K_KEYCODE_LEFT].pressed = 0;
-    keys[PS2K_KEYCODE_LEFT].ascii = 0;
-    keys[PS2K_KEYCODE_LEFT].s_ascii = 0;
+    keys[PS2K_KEYCODE_LEFT].ascii = PS2K_LEFT_MAP_ASCII;
+    keys[PS2K_KEYCODE_LEFT].s_ascii = PS2K_LEFT_MAP_ASCII;
 
     keys[PS2K_KEYCODE_RIGHT].pressed = 0;
-    keys[PS2K_KEYCODE_RIGHT].ascii = 0;
-    keys[PS2K_KEYCODE_RIGHT].s_ascii = 0;
+    keys[PS2K_KEYCODE_RIGHT].ascii = PS2K_RIGHT_MAP_ASCII;
+    keys[PS2K_KEYCODE_RIGHT].s_ascii = PS2K_RIGHT_MAP_ASCII;
 }
 
 void ps2k_handle_irq1(uint8_t keycode) {
@@ -342,11 +342,11 @@ void ps2k_in_buffer_add(char c) {
     if (in_buffer_start < in_buffer_end) {
         diff = in_buffer_end - in_buffer_start;
     } else {
-        diff = (IN_BUFFER_SIZE - in_buffer_start + in_buffer_end) % IN_BUFFER_SIZE;
+        diff = (PS2K_IN_BUFFER_SIZE - in_buffer_start + in_buffer_end) % PS2K_IN_BUFFER_SIZE;
     }
-    if (diff < IN_BUFFER_SIZE - 1) {
+    if (diff < PS2K_IN_BUFFER_SIZE - 1) {
         in_buffer[in_buffer_end] = c;
-        in_buffer_end = (in_buffer_end + 1) % IN_BUFFER_SIZE;
+        in_buffer_end = (in_buffer_end + 1) % PS2K_IN_BUFFER_SIZE;
     }
 }
 
@@ -356,7 +356,7 @@ char ps2k_in_buffer_get() {
         c = EOF;
     } else {
         c = in_buffer[in_buffer_start];
-        in_buffer_start = (in_buffer_start + 1) % IN_BUFFER_SIZE;
+        in_buffer_start = (in_buffer_start + 1) % PS2K_IN_BUFFER_SIZE;
     }
     return c;
 }

@@ -31,8 +31,8 @@ void tty_reset(void) {
     tty_row = 0;
     tty_column_offset = 0;
     tty_row_offset = 0;
-    tty_char_color = VGA_COLOR_LIGHT_GREY;
-    tty_background_color = VGA_COLOR_BLACK;
+    tty_char_color = TTY_DEFAULT_CHAR_COLOR;
+    tty_background_color = TTY_DEFAULT_BACKGROUND_COLOR;
     tty_vga_color = vga_make_color(tty_char_color, tty_background_color);
     tty_vga_buffer = VGA_TEXT_BUFFER;
 
