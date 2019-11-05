@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 ps2k_key keys[256];
-char in_buffer[PS2K_IN_BUFFER_SIZE];
+ps2k_buffered_key in_buffer[PS2K_IN_BUFFER_SIZE];
 unsigned int in_buffer_start;
 unsigned int in_buffer_end;
 int is_buffering;
@@ -289,31 +289,33 @@ void ps2k_init() {
     keys[PS2K_KEYCODE_SPACE].s_ascii = 32;
 
     keys[PS2K_KEYCODE_UP].pressed = 0;
-    keys[PS2K_KEYCODE_UP].ascii = PS2K_UP_MAP_ASCII;
-    keys[PS2K_KEYCODE_UP].s_ascii = PS2K_UP_MAP_ASCII;
+    keys[PS2K_KEYCODE_UP].ascii = 0;
+    keys[PS2K_KEYCODE_UP].s_ascii = 0;
 
     keys[PS2K_KEYCODE_DOWN].pressed = 0;
-    keys[PS2K_KEYCODE_DOWN].ascii = PS2K_DOWN_MAP_ASCII;
-    keys[PS2K_KEYCODE_DOWN].s_ascii = PS2K_DOWN_MAP_ASCII;
+    keys[PS2K_KEYCODE_DOWN].ascii = 0;
+    keys[PS2K_KEYCODE_DOWN].s_ascii = 0;
 
     keys[PS2K_KEYCODE_LEFT].pressed = 0;
-    keys[PS2K_KEYCODE_LEFT].ascii = PS2K_LEFT_MAP_ASCII;
-    keys[PS2K_KEYCODE_LEFT].s_ascii = PS2K_LEFT_MAP_ASCII;
+    keys[PS2K_KEYCODE_LEFT].ascii = 0;
+    keys[PS2K_KEYCODE_LEFT].s_ascii = 0;
 
     keys[PS2K_KEYCODE_RIGHT].pressed = 0;
-    keys[PS2K_KEYCODE_RIGHT].ascii = PS2K_RIGHT_MAP_ASCII;
-    keys[PS2K_KEYCODE_RIGHT].s_ascii = PS2K_RIGHT_MAP_ASCII;
+    keys[PS2K_KEYCODE_RIGHT].ascii = 0;
+    keys[PS2K_KEYCODE_RIGHT].s_ascii = 0;
 }
 
 void ps2k_handle_irq1(uint8_t keycode) {
     if (keycode < 0x81) {
         keys[keycode].pressed = 1;
-        if (is_buffering && keys[keycode].ascii != 0) {
+        if (is_buffering /*&& keys[keycode].ascii != 0*/) {
+            ps2k_buffered_key buffered_key = {keycode, 0};
             if (ps2k_is_pressed(PS2K_KEYCODE_LSHIFT) || ps2k_is_pressed(PS2K_KEYCODE_RSHIFT)) {
-                ps2k_in_buffer_add(keys[keycode].s_ascii);
+                buffered_key.character = keys[keycode].s_ascii;
             } else {
-                ps2k_in_buffer_add(keys[keycode].ascii);
+                buffered_key.character = keys[keycode].ascii;
             }
+            (void)ps2k_in_buffer_add(buffered_key);
         }
     } else {
         keys[keycode - 0x80].pressed = 0;
@@ -332,31 +334,33 @@ void ps2k_stop_buffering() {
     is_buffering = 0;
 }
 
-char ps2k_get_char() {
-    char c = ps2k_in_buffer_get();
-    return c;
-}
-
-void ps2k_in_buffer_add(char c) {
+kernel_return_t ps2k_in_buffer_add(ps2k_buffered_key key) {
+    kernel_return_t status = PS2K_STATUS_BUFFER_FULL;
     unsigned int diff = 0;
+
     if (in_buffer_start < in_buffer_end) {
         diff = in_buffer_end - in_buffer_start;
     } else {
         diff = (PS2K_IN_BUFFER_SIZE - in_buffer_start + in_buffer_end) % PS2K_IN_BUFFER_SIZE;
     }
+
     if (diff < PS2K_IN_BUFFER_SIZE - 1) {
-        in_buffer[in_buffer_end] = c;
+        in_buffer[in_buffer_end] = key;
         in_buffer_end = (in_buffer_end + 1) % PS2K_IN_BUFFER_SIZE;
+        status = KERNEL_STATUS_SUCCESS;
     }
+
+    return status;
 }
 
-char ps2k_in_buffer_get() {
-    char c;
-    if (in_buffer_start == in_buffer_end) {
-        c = EOF;
-    } else {
-        c = in_buffer[in_buffer_start];
+kernel_return_t ps2k_in_buffer_get(ps2k_buffered_key *key) {
+    kernel_return_t status = PS2K_STATUS_BUFFER_EMPTY;
+
+    if (in_buffer_start != in_buffer_end) {
+        *key = in_buffer[in_buffer_start];
         in_buffer_start = (in_buffer_start + 1) % PS2K_IN_BUFFER_SIZE;
+        status = KERNEL_STATUS_SUCCESS;
     }
-    return c;
+
+    return status;
 }

@@ -32,18 +32,22 @@ void kernel_main(void) {
 
     ps2k_start_buffering();
 
-    char c;
+    ps2k_buffered_key key;
     printf("> ");
     while (1) {
-        if ((c = ps2k_get_char()) != EOF) {
-            if (c == '\n') {
-                printf("\n\n> ");
-            } else if (c == PS2K_UP_MAP_ASCII) {
-                tty_scroll_up(1);
-            } else if (c == PS2K_DOWN_MAP_ASCII) {
-                tty_scroll_down(1);
+        if (ps2k_in_buffer_get(&key) >= 0) {
+            if (key.character != 0) {
+                if (key.character == '\n') {
+                    printf("\n\n> ");
+                } else {
+                    printf("%c", key.character);
+                }
             } else {
-                printf("%c", c);
+                if (key.keycode == PS2K_KEYCODE_UP) {
+                    tty_scroll_up(1);
+                } else if (key.keycode == PS2K_KEYCODE_DOWN) {
+                    tty_scroll_down(1);
+                }
             }
         }
     }
