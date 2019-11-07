@@ -6,5 +6,6 @@
 *.iso
 .vscode/*
 kernel/iso/*
+programs/*
 sysroot
 

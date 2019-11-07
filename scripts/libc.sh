@@ -1,5 +1,5 @@
 #!/bin/bash
 cd ..
 cd libc
-make
+make $1
 cp -r include ../sysroot/usr

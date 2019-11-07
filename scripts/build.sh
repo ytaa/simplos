@@ -1,6 +1,6 @@
 #!/bin/bash
 cp -r ../kernel/include ../sysroot/usr
-bash libc.sh
+bash libc.sh UDEF=-DKERNEL_BUILD
 bash kernel.sh
 #cd ..
 #cd kernel

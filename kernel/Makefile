@@ -4,7 +4,7 @@ INCLUDE = -Iinclude
 LIBS = -nostdlib -lc -lgcc
 
 CFLAGS?=-O2
-CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra 
+CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra $(UDEF)
 
 SOURCES = $(wildcard ./src/*.c)
 ASM_SOURCES = $(wildcard ./src/*.s)

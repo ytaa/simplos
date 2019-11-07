@@ -2,6 +2,7 @@
 #include <kernel/pit/pit_timer.h>
 #include <kernel/ps2/keyboard.h>
 #include <sys/io.h>
+#include <sys/syscall.h>
 
 struct IDT_entry IDT[256];
 
@@ -9,10 +10,9 @@ void isr_idt_init() {
     extern int isr_idt_load();
     extern int isr_irq0();
     extern int isr_irq1();
+    extern int isr_irq_syscall();
 
-    unsigned long irq0_address;
-    unsigned long irq1_address;
-
+    unsigned long irq_address;
     unsigned long idt_address;
     unsigned long idt_ptr[2];
 
@@ -45,19 +45,29 @@ void isr_idt_init() {
     isr_set_mask(14);
     isr_set_mask(15);
 
-    irq0_address = (unsigned long)isr_irq0;
-    IDT[32].offset_lowerbits = irq0_address & 0xffff;
+    //PIT interrupt
+    irq_address = (unsigned long)isr_irq0;
+    IDT[32].offset_lowerbits = irq_address & 0xffff;
     IDT[32].selector = 0x08;
     IDT[32].zero = 0;
     IDT[32].type_attr = 0x8e;
-    IDT[32].offset_higherbits = (irq0_address & 0xffff0000) >> 16;
+    IDT[32].offset_higherbits = (irq_address & 0xffff0000) >> 16;
 
-    irq1_address = (unsigned long)isr_irq1;
-    IDT[33].offset_lowerbits = irq1_address & 0xffff;
+    //PS2 keyboard interrupt
+    irq_address = (unsigned long)isr_irq1;
+    IDT[33].offset_lowerbits = irq_address & 0xffff;
     IDT[33].selector = 0x08;
     IDT[33].zero = 0;
     IDT[33].type_attr = 0x8e;
-    IDT[33].offset_higherbits = (irq1_address & 0xffff0000) >> 16;
+    IDT[33].offset_higherbits = (irq_address & 0xffff0000) >> 16;
+
+    //syscall interrupt
+    irq_address = (unsigned long)isr_irq_syscall;
+    IDT[128].offset_lowerbits = irq_address & 0xffff;
+    IDT[128].selector = 0x08;
+    IDT[128].zero = 0;
+    IDT[128].type_attr = 0xee;  //callable from userspace
+    IDT[128].offset_higherbits = (irq_address & 0xffff0000) >> 16;
 
     /* fill the IDT descriptor */
     idt_address = (unsigned long)IDT;
@@ -75,6 +85,10 @@ void isr_irq1_handler(void) {
     uint8_t key = inb(0x60);
     ps2k_handle_irq1(key);
     outb(0x20, 0x20);  //EOI
+}
+
+void isr_irq_syscall_handler(void) {
+    syscall_irq_handler();
 }
 
 void isr_set_mask(unsigned char IRQline) {

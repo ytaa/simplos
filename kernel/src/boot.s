@@ -45,6 +45,9 @@ gdtr:
 .global isr_irq1
 .global isr_irq1_handler
 .extern isr_irq1_handler
+.global isr_irq_syscall
+.global isr_irq_syscall_handler
+.extern isr_irq_syscall_handler
 isr_irq0:
   pusha
   call isr_irq0_handler
@@ -54,6 +57,9 @@ isr_irq1:
   pusha
   call isr_irq1_handler
   popa
+  iret
+isr_irq_syscall:
+  call isr_irq_syscall_handler
   iret
 isr_idt_load:
   mov 4(%esp), %edx
