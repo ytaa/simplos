@@ -1,5 +1,5 @@
-#ifndef KERNEL_SYSCALL
-#define KERNEL_SYSCALL
+#ifndef _SIMPLSTD_H
+#define _SIMPLSTD_H
 
 #include <stdint.h>
 
@@ -10,6 +10,16 @@
 #define SYSCALL_STATUS_SUCCESS 0
 #define SYSCALL_STATUS_INVALID_PARAM -2
 #define SYSCALL_STATUS_INVALID_OPCODE -3
+#define SYSCALL_INVALID_FD -4
+
+//standard file descriptors
+#define STDOUT 1
+
+#define EOF -1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct {
     uint32_t param1;
@@ -20,6 +30,9 @@ typedef struct {
 } syscall_params;
 
 int32_t syscall(uint32_t opcode, syscall_params *params);
-void syscall_irq_handler();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

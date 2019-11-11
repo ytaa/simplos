@@ -1,17 +1,20 @@
+#include <kernel/kernel_syscall.h>
 #include <kernel/tty.h>
 #include <stdio.h>
-#include <sys/syscall.h>
 
 static int32_t sys_write(uint32_t fd, uint8_t* data, uint32_t size) {
     int32_t status = SYSCALL_STATUS_SUCCESS;
-    (void)fd;
-    for (uint32_t char_index = 0; char_index < size; char_index++) {
-        tty_put_char(data[char_index]);
+
+    if (fd == STDOUT) {
+        tty_write((const char*)data, size);
+    } else {
+        status = SYSCALL_INVALID_FD;
     }
+
     return status;
 }
 
-int32_t syscall(uint32_t opcode, syscall_params* prs) {
+int32_t kernel_syscall(uint32_t opcode, volatile syscall_params* prs) {
     int32_t status = SYSCALL_STATUS_INVALID_PARAM;
     if (prs) {
         status = SYSCALL_STATUS_INVALID_OPCODE;
@@ -26,9 +29,9 @@ int32_t syscall(uint32_t opcode, syscall_params* prs) {
     return status;
 }
 
-void syscall_irq_handler() {
-    uint32_t opcode = 0;
-    syscall_params params;
+void kernel_syscall_irq_handler() {
+    static volatile uint32_t opcode = 0;
+    static volatile syscall_params params;
 
     asm volatile(
         "movl %%eax, %0\n\t"
@@ -43,5 +46,5 @@ void syscall_irq_handler() {
     asm volatile(
         "movl %0, %%eax"
         :
-        : "r"(syscall(opcode, &params)));
+        : "r"(kernel_syscall(opcode, &params)));
 }

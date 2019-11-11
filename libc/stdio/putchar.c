@@ -1,22 +1,14 @@
+#include <simplstd.h>
 #include <stdio.h>
-#include <sys/syscall.h>
+#include <string.h>
 
 int putchar(int ic) {
+    static syscall_params params;
     static volatile char c = 0;
     c = ic;
+    params.param1 = STDOUT;
+    params.param2 = (uint32_t)&c;
+    params.param3 = 1;
 
-    static volatile int32_t syscall_result = 5;
-    asm volatile(
-        "pusha\n\t"
-        "movl %1, %%eax\n\t"
-        "movl %2, %%ebx\n\t"
-        "movl %3, %%ecx\n\t"
-        "movl %4, %%edx\n\t"
-        "int $0x80\n\t"
-        "movl %%eax, %0\n\t"
-        "popa"
-        : "=rm"(syscall_result)
-        : "rm"(SYSCALL_SYS_WRITE), "rm"(0), "rm"(&c), "rm"(1));
-
-    return syscall_result;
+    return syscall(SYSCALL_SYS_WRITE, &params);
 }

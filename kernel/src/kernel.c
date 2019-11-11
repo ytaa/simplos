@@ -1,3 +1,5 @@
+#include <elf/elf32_loader.h>
+#include <elf/elf_test.h>
 #include <kernel/isr.h>
 #include <kernel/kernel_init.h>
 #include <kernel/kernel_utils.h>
@@ -31,6 +33,8 @@ void kernel_main(void) {
     kinit_display_welcome_screen();
 
     ps2k_start_buffering();
+
+    elf32_load_exec(test_elf_buffer);
 
     ps2k_buffered_key key;
     printf("> ");

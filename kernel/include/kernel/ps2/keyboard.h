@@ -1,7 +1,6 @@
 #ifndef PS2_KEYBOARD_H
 #define PS2_KEYBOARD_H
 
-#define EOF (-1)
 #define PS2K_IN_BUFFER_SIZE 256
 
 //kernel_return_t values
@@ -9,6 +8,7 @@
 #define PS2K_STATUS_BUFFER_EMPTY -3
 
 #include <kernel/kernel_utils.h>
+#include <simplstd.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "US/keymap.h"

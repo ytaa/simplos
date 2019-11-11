@@ -5,5 +5,7 @@
 
 _start:
     call main
+    _end_loop:
+    jmp _end_loop
 
 #endif

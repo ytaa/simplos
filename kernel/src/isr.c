@@ -1,8 +1,8 @@
 #include <kernel/isr.h>
+#include <kernel/kernel_syscall.h>
 #include <kernel/pit/pit_timer.h>
 #include <kernel/ps2/keyboard.h>
 #include <sys/io.h>
-#include <sys/syscall.h>
 
 struct IDT_entry IDT[256];
 
@@ -88,7 +88,7 @@ void isr_irq1_handler(void) {
 }
 
 void isr_irq_syscall_handler(void) {
-    syscall_irq_handler();
+    kernel_syscall_irq_handler();
 }
 
 void isr_set_mask(unsigned char IRQline) {
