@@ -64,6 +64,34 @@ int printf(const char* format, ...) {
                         d -= number * i;
                     }
                 }
+            } else if (format_char == 'u') {
+                uint32_t u = va_arg(parameters, uint32_t);
+                if (u == 0) {
+                    if (putchar('0') == EOF) {
+                        return -1;
+                    }
+                    written++;
+                } else {
+                    bool begining_found = false;
+                    for (uint64_t i = 10000000000; i > 0; i /= 10) {
+                        uint32_t number = u / i;
+                        if (number != 0) {
+                            begining_found = true;
+                            if (putchar(48 + number) == EOF) {
+                                return -1;
+                            }
+                            written++;
+                        } else {
+                            if (begining_found) {
+                                if (putchar('0') == EOF) {
+                                    return -1;
+                                }
+                                written++;
+                            }
+                        }
+                        u -= number * i;
+                    }
+                }
             } else {
                 i--;
             }

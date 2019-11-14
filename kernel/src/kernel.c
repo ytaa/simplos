@@ -6,6 +6,7 @@
 #include <kernel/paging.h>
 #include <kernel/pit/pit_timer.h>
 #include <kernel/ps2/keyboard.h>
+#include <kernel/scheduler.h>
 #include <kernel/tty.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -21,21 +22,7 @@
 #error "This program needs to be compiled with a ix86-elf compiler"
 #endif
 
-void kernel_main(void) {
-    pg_init_paging();
-    tty_init();
-    ps2k_init();
-    pitt_init();
-    isr_idt_init();
-
-    pitt_enable();
-
-    kinit_display_welcome_screen();
-
-    ps2k_start_buffering();
-
-    elf32_load_exec(test_elf_buffer);
-
+void kernel_loop(void) {
     ps2k_buffered_key key;
     printf("> ");
     while (1) {
@@ -55,6 +42,34 @@ void kernel_main(void) {
             }
         }
     }
+}
+
+void kernel_main(void) {
+    pg_init_paging();
+    tty_init();
+    ps2k_init();
+    pitt_init();
+    isr_idt_init();
+    sch_init();
+
+    pitt_enable();
+
+    kinit_display_welcome_screen();
+
+    ps2k_start_buffering();
+
+    elf32_info elf_info;
+    elf32_load_exec(test_elf_buffer, 134512640, &elf_info);
+    printf("Actual base vaddr: %d\n", elf_info.base_vaddr);
+    printf("kernel_loop addr: %u\n", (uint32_t)kernel_loop);
+    printf("jumping to %u...\n", elf_info.entry_vaddr);
+
+    asm volatile(
+        "jmp *%0"
+        :
+        : "rm"(elf_info.entry_vaddr));
+
+    kernel_loop();
 
     ps2k_stop_buffering();
 

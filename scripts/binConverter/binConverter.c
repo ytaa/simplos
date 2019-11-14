@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     }
 
     //write output file header
-    fprintf(outputFile, "#include <stdint.h>\n\nconst uint32_t %s_" OUTPUT_BUFFER_SIZE " = %u;\nconst uint8_t %s_" OUTPUT_BUFFER_NAME "[%d] = {",
+    fprintf(outputFile, "#include <stdint.h>\n\nconst uint32_t %s_" OUTPUT_BUFFER_SIZE " = %u;\nuint8_t %s_" OUTPUT_BUFFER_NAME "[%d] = {",
             binName, binSize, binName, binSize);
 
     //write binary content
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
         return 4;
     }
 
-    fprintf(outputFile, "#pragma once\n#include <stdint.h>\n\nextern const uint32_t %s_" OUTPUT_BUFFER_SIZE ";\nextern const uint8_t %s_" OUTPUT_BUFFER_NAME ";\n", binName, binName);
+    fprintf(outputFile, "#pragma once\n#include <stdint.h>\n\nextern const uint32_t %s_" OUTPUT_BUFFER_SIZE ";\nextern uint8_t %s_" OUTPUT_BUFFER_NAME "[%d];\n", binName, binName, binSize);
 
     //close output header file
     fclose(outputFile);

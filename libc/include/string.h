@@ -9,7 +9,7 @@ extern "C" {
 
 //int memcmp(const void*, const void*, size_t);
 
-//void* memcpy(void* __restrict, const void* __restrict, size_t);
+void* memcpy(void* __restrict dst, const void* __restrict src, size_t nbytes);
 
 //void* memmove(void*, const void*, size_t);
 
