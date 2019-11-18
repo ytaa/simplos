@@ -1,5 +1,3 @@
-#include <elf/elf32_loader.h>
-#include <elf/elf_test.h>
 #include <kernel/isr.h>
 #include <kernel/kernel_init.h>
 #include <kernel/kernel_utils.h>
@@ -58,16 +56,7 @@ void kernel_main(void) {
 
     ps2k_start_buffering();
 
-    elf32_info elf_info;
-    elf32_load_exec(test_elf_buffer, 134512640, &elf_info);
-    printf("Actual base vaddr: %d\n", elf_info.base_vaddr);
-    printf("kernel_loop addr: %u\n", (uint32_t)kernel_loop);
-    printf("jumping to %u...\n", elf_info.entry_vaddr);
-
-    asm volatile(
-        "jmp *%0"
-        :
-        : "rm"(elf_info.entry_vaddr));
+    sch_request_exec(0);
 
     kernel_loop();
 
