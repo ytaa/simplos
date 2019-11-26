@@ -1,4 +1,7 @@
+#include <kernel/kernel_utils.h>
 #include <kernel/pit/pit_timer.h>
+#include <kernel/scheduler.h>
+#include <kernel/stdin.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -50,6 +53,7 @@ void pitt_handle_irq(void) {
         if (current_system_time.milliseconds >= PITT_MAX_MS) {
             current_system_time.milliseconds = 0;
             current_system_time.seconds++;
+            //kuts_printk("pit: sec %u\n", current_system_time.seconds);
             if (current_system_time.seconds >= PITT_MAX_SEC) {
                 current_system_time.seconds = 0;
                 current_system_time.minutes++;
@@ -62,6 +66,10 @@ void pitt_handle_irq(void) {
                 }
             }
         }
+
+        //cyclic kernel callbacks
+        stdin_update();
+        sch_schedule();
     }
 }
 

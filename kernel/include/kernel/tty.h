@@ -25,6 +25,7 @@ void tty_scroll_down(size_t amount);
 void tty_scroll_left(size_t amount);
 void tty_scroll_right(size_t amount);
 void tty_rewrite_vga_buffer(void);
+void tty_backspace(void);
 void tty_put_entry(unsigned char c, size_t row, size_t col);
 void tty_put_char(char c);
 void tty_write(const char* data, size_t size);

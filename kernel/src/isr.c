@@ -6,6 +6,8 @@
 
 struct IDT_entry IDT[256];
 
+uint32_t irq_caller_esp = 0;
+
 void isr_idt_init() {
     extern int isr_idt_load();
     extern int isr_irq0();

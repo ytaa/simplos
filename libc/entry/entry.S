@@ -5,9 +5,14 @@
 
 _start:
     call main
-    //_end_loop:
-    //jmp _end_loop
-    mov $2147484496, %eax
-    jmp *%eax
+
+    mov $1, %eax
+    int $0x80
+
+    //mov $2147484496, %eax
+    //jmp *%eax
+
+    _end_loop:
+    jmp _end_loop
 
 #endif

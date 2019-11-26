@@ -63,7 +63,7 @@ kernel_return_t elf32_load_exec(void *file, uint32_t physical_address, elf32_inf
     elf32_header *header = file;
     uint8_t *target_process_space = (uint8_t *)physical_address;
 
-    print_debug_info(header);
+    //print_debug_info(header);
 
     //check magic number
     if (!elf32_is_valid(header)) {

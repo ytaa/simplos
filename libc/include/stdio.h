@@ -5,10 +5,11 @@
 extern "C" {
 #endif
 
-int printf(const char*, ...);
+int printf(const char *, ...);
 int putchar(int);
-int puts(const char*);
+int puts(const char *);
 int getchar();
+char *gets(char *s);
 
 #ifdef __cplusplus
 }

@@ -20,27 +20,11 @@
 #error "This program needs to be compiled with a ix86-elf compiler"
 #endif
 
-void kernel_loop(void) {
-    ps2k_buffered_key key;
-    printf("> ");
-    while (1) {
-        if (ps2k_in_buffer_get(&key) >= 0) {
-            if (key.character != 0) {
-                if (key.character == '\n') {
-                    printf("\n\n> ");
-                } else {
-                    printf("%c", key.character);
-                }
-            } else {
-                if (key.keycode == PS2K_KEYCODE_UP) {
-                    tty_scroll_up(1);
-                } else if (key.keycode == PS2K_KEYCODE_DOWN) {
-                    tty_scroll_down(1);
-                }
-            }
-        }
-    }
-}
+uint32_t *sbuf1;
+uint32_t *sbuf2;
+
+uint32_t sbuf11[10];
+uint32_t sbuf22[10];
 
 void kernel_main(void) {
     pg_init_paging();
@@ -56,9 +40,13 @@ void kernel_main(void) {
 
     ps2k_start_buffering();
 
-    sch_request_exec(0);
+    sbuf1 = sbuf11;
+    sbuf2 = sbuf22;
 
-    kernel_loop();
+    sch_request_program_index = 0;
+    sch_request_exec();
+
+    sch_run();
 
     ps2k_stop_buffering();
 

@@ -132,6 +132,19 @@ void tty_rewrite_vga_buffer() {
     }
 }
 
+void tty_backspace(void) {
+    if (tty_column == 0) {
+        if (tty_row > 0) {
+            tty_row--;
+            tty_column = TTY_WIDTH - 1;
+        }
+    } else {
+        tty_column--;
+    }
+
+    tty_put_entry(' ', tty_row, tty_column);
+}
+
 void tty_put_entry(unsigned char c, size_t row, size_t column) {
     const size_t index = row * TTY_WIDTH + column;
     tty_buffer[index] = vga_make_entry(c, tty_vga_color);
@@ -160,7 +173,7 @@ void tty_put_char(char c) {
         tty_row_offset = 0;
         tty_rewrite_vga_buffer();
     }
-    if ((int)(tty_row - tty_row_offset) >= VGA_HEIGHT) {
+    if ((int)(tty_row - tty_row_offset) == VGA_HEIGHT) {
         tty_scroll_down(tty_row - tty_row_offset - VGA_HEIGHT + 1);
     }
 }

@@ -14,4 +14,6 @@ void kuts_sleep(uint64_t sleep_ms);
 
 uint64_t kuts_calc_ms_diff(uint64_t start_ms, uint64_t end_ms);
 
+int kuts_printk(const char* format, ...);
+
 #endif
