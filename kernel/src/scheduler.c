@@ -1,6 +1,7 @@
 #include <kernel/kernel_utils.h>
 #include <kernel/paging.h>
 #include <kernel/pit/pit_timer.h>
+#include <kernel/ps2/keyboard.h>
 #include <kernel/scheduler.h>
 #include <kernel/tty.h>
 #include <stdio.h>
@@ -108,6 +109,27 @@ static void handle_sleeping_processes() {
     }
 }
 
+static void handle_all_process_shutdown_request() {
+    if (ps2k_is_pressed(PS2K_KEYCODE_LCTRL) && ps2k_is_pressed(PS2K_KEYCODE_C)) {
+        for (uint32_t slot_index = 0; slot_index < SCH_MAX_LOADED_PROCESS; slot_index++) {
+            if (memmory_slots[slot_index].is_used == true) {
+                if (memmory_slots[slot_index].loaded_binary_idx != 0) {
+                    uint32_t start_current_slot_index = current_slot_index;
+                    sch_process_control_block *start_pcb = sch_current_pcb;
+
+                    current_slot_index = slot_index;
+                    sch_current_pcb = &(memmory_slots[slot_index].pcb);
+
+                    sch_terminate_process();
+
+                    current_slot_index = start_current_slot_index;
+                    sch_current_pcb = start_pcb;
+                }
+            }
+        }
+    }
+}
+
 //global functions
 
 void sch_init() {
@@ -196,6 +218,7 @@ kernel_return_t sch_request_exec() {
     kuts_printk("[SCH] basev: %u, max space %u, stack: %u\n", elf_info.base_vaddr, SCH_MAX_PROCESS_SPACE_SIZE, memmory_slots[pid].pcb.stack_pointer);
     memmory_slots[pid].pcb.page_directory = pg_processes_page_directories[pid];
     memmory_slots[pid].pcb.state = SCH_PSTATE_NEW;
+    memmory_slots[pid].loaded_binary_idx = program_index;
 
     if (sch_is_running == true) {
         memmory_slots[pid].pcb.parent_pid = current_slot_index;
@@ -292,6 +315,8 @@ void sch_schedule() {
     } else {
         schedule_trigger_ticks = 0;
     }
+
+    handle_all_process_shutdown_request();
 
     handle_sleeping_processes();
 

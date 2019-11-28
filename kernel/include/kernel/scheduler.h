@@ -49,6 +49,7 @@ typedef struct {
     bool is_used;
     uint32_t start_paddr;
     sch_process_control_block pcb;
+    uint32_t loaded_binary_idx;
 } sch_memmory_slot;
 
 extern sch_process_control_block *sch_current_pcb;
