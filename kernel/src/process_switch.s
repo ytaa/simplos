@@ -1,9 +1,9 @@
 //WARNING: IRQs has to be disabled
 
 .global sch_switch_process
-.global sch_run_very_first_process
 .global sch_switch_new_process
 .global sch_user_request_exec
+.global sch_wakeup_process
  
 .extern sch_current_pcb
 .extern sch_next_pcb
@@ -11,9 +11,8 @@
 .extern sch_request_exec
 .extern sch_common_kernel_stack
 
-.extern sbuf1
-.extern sbuf2
-.global stack_test1
+.extern sch_current_wakeup_is_blocked
+.extern sch_current_wakeup_pcb
 
 sch_switch_process:
     //Save previous task's state
@@ -92,7 +91,7 @@ sch_switch_new_process:
     push $0x0000 // ds - ring0
     push $0x0000 // ss
     push $512 //eflags?
-    push $8 //user code segment - ring 0
+    push $0x08 //user code segment - ring 0
     push %eax //entry address
 
     //send EOI
@@ -103,16 +102,22 @@ sch_switch_new_process:
     sti
     iret 
 
-    
+sch_wakeup_process:
+    pusha
 
-sch_run_very_first_process:
-    movl sch_current_pcb, %edi //load address of first process PCB
-    movl (%edi), %esp          //load esp for first process from PCB
-    movl 4(%edi), %eax         //load address of page directory for first process from PCB - offset 4 in PCB
-    movl %eax, %cr3            //load the first process virtual address space
-    movl 12(%edi), %eax        //load entry address of new task
-    jmp *%eax                  //jump to new task entry
+    movl sch_current_wakeup_pcb, %esi     //load address of wakeup process PCB
+    movl 4(%esi), %eax
+    movl %eax, %cr3 //load wakeup process page directory
 
+    movl sch_current_wakeup_is_blocked, %edi
+    movl $0, (%edi)
+
+    movl sch_current_pcb, %edi  //load address of current process PCB
+    movl 4(%edi), %eax         //load address of page directory for current process from PCB - offset 4 in PCB
+    movl %eax, %cr3
+
+    popa
+    ret
 
 sch_user_request_exec:
     pusha
@@ -137,65 +142,3 @@ sch_user_request_exec:
 
     popa
     ret
-
-.extern print_stack
-stack_test1:
-    movl sbuf1, %ebx
-
-    mov (%esp), %eax
-    mov %eax, (%ebx)
-    
-    mov 4(%esp), %eax
-    mov %eax, 4(%ebx)
-
-    mov 8(%esp), %eax
-    mov %eax, 8(%ebx)
-
-    movl 12(%esp), %eax
-    movl %eax, 12(%ebx)
-    
-    mov 16(%esp), %eax
-    mov %eax, 16(%ebx)
-
-    mov 20(%esp), %eax
-    mov %eax, 20(%ebx)
-
-    movl 24(%esp), %eax
-    movl %eax, 24(%ebx)
-
-    movl 28(%esp), %eax
-    movl %eax, 28(%ebx)
-
-   call print_stack 
-
-    ret
-
-stack_test2:
-    movl sbuf2, %ebx
-    
-    mov (%esp), %eax
-    mov %eax, (%ebx)
-
-    mov 4(%esp), %eax
-    mov %eax, 4(%ebx)
-
-    mov 8(%esp), %eax
-    mov %eax, 8(%ebx)
-
-    movl 12(%esp), %eax
-    movl %eax, 12(%ebx)
-    
-    mov 16(%esp), %eax
-    mov %eax, 16(%ebx)
-
-    mov 20(%esp), %eax
-    mov %eax, 20(%ebx)
-
-    movl 24(%esp), %eax
-    movl %eax, 24(%ebx)
-
-    movl 28(%esp), %eax
-    movl %eax, 28(%ebx)
-
-    ret
-

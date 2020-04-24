@@ -5,12 +5,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define SCH_MAX_STORED_BINARIES 20
 #define SCH_MAX_PROCESS_PAGE_TABLES 10
 #define SCH_MAX_LOADED_PROCESS 50
 #define SCH_MAX_PROCESS_SPACE_SIZE SCH_MAX_PROCESS_PAGE_TABLES *PG_PAGE_TABLE_SIZE
 
 #define SCH_PROCESSES_MEMMORY_OFFSET PG_PAGE_TABLE_SIZE
+
+#define SCH_KERNEL_STACK_SIZE 1024
 
 //return status codes
 #define SCH_STATUS_INVALID_FORMAT -2
@@ -31,18 +32,18 @@ typedef struct {
 } sch_elf_binary;
 
 typedef struct {
-    uint32_t kernel_stack_pointer;   //esp0 - expected offset 0
-    uint32_t *page_directory;        //cr3 - expected offset 4
-    uint32_t stack_pointer;          //esp - expected offset 8
-    elf32_info elf_info;             //process kernel stack - expected offset 12
-    uint8_t kernel_stack[1024];      //process kernel stack - expected offset 20
-    uint32_t pid;                    //unique process identifier representing processes memmory slot used by the process
-    sch_process_state state;         //current process state
-    uint32_t remaining_sleep_ms;     //ms counter used during sleep state
-    uint32_t child_processes_count;  //number of child process
-    uint32_t parent_pid;             //parent process identifier
-    bool *is_blocked;                //process space pointer to variable blocking process on blocking states
-    uint8_t *input_buffer;           //process space pointer to input buffer
+    uint32_t kernel_stack_pointer;                //esp0 - expected offset 0
+    uint32_t *page_directory;                     //cr3 - expected offset 4
+    uint32_t stack_pointer;                       //esp - expected offset 8
+    elf32_info elf_info;                          //process elf info - expected offset 12
+    uint8_t kernel_stack[SCH_KERNEL_STACK_SIZE];  //process kernel stack - expected offset 20
+    uint32_t pid;                                 //unique process identifier representing processes memmory slot used by the process
+    sch_process_state state;                      //current process state
+    uint32_t remaining_sleep_ms;                  //ms counter used during sleep state
+    uint32_t child_processes_count;               //number of child process
+    uint32_t parent_pid;                          //parent process identifier
+    bool *is_blocked;                             //process space pointer to variable blocking process on blocking states
+    uint8_t *input_buffer;                        //process space pointer to input buffer
 } sch_process_control_block;
 
 typedef struct {
@@ -58,7 +59,11 @@ extern sch_process_control_block *sch_next_pcb;
 
 extern uint32_t sch_request_program_index;
 
+extern sch_process_control_block idle_pcb;
+
 extern void sch_user_request_exec();
+
+extern void sch_wakeup_process();
 
 void sch_init();
 
