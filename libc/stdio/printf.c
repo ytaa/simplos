@@ -5,7 +5,34 @@
 #include <stdio.h>
 #include <string.h>
 
+#define PUTCHAR_BUFFER_SIZE 256u
+
+static char putchar_buffer[PUTCHAR_BUFFER_SIZE];
+static uint32_t putchar_buffer_index = 0u;
+
+static int flush_putchar_buffer() {
+    int status = puts(putchar_buffer);
+
+    putchar_buffer_index = 0;
+    bzero(putchar_buffer, PUTCHAR_BUFFER_SIZE);
+
+    return status;
+}
+
+static int buffered_putchar(int ic) {
+    putchar_buffer[putchar_buffer_index++] = ic;
+
+    if (putchar_buffer_index >= PUTCHAR_BUFFER_SIZE - 1u) {
+        return flush_putchar_buffer();
+    }
+
+    return 0;
+}
+
 int printf(const char* format, ...) {
+    bzero(putchar_buffer, PUTCHAR_BUFFER_SIZE);
+    putchar_buffer_index = 0u;
+
     va_list parameters;
     va_start(parameters, format);
     int written = 0;
@@ -19,28 +46,28 @@ int printf(const char* format, ...) {
                 const char* str = va_arg(parameters, const char*);
                 size_t len = strlen(str);
                 for (size_t j = 0; j < len; j++) {
-                    if (putchar(str[j]) == EOF) {
+                    if (buffered_putchar(str[j]) == EOF) {
                         return -1;
                     }
                 }
                 written += len;
             } else if (format_char == 'c') {
                 char c = (char)va_arg(parameters, int);
-                if (putchar(c) == EOF) {
+                if (buffered_putchar(c) == EOF) {
                     return -1;
                 }
                 written++;
             } else if (format_char == 'd') {
                 int d = va_arg(parameters, int);
                 if (d == 0) {
-                    if (putchar('0') == EOF) {
+                    if (buffered_putchar('0') == EOF) {
                         return -1;
                     }
                     written++;
                 } else {
                     if (d < 0) {
                         d = -d;
-                        if (putchar('-') == EOF) {
+                        if (buffered_putchar('-') == EOF) {
                             return -1;
                         }
                     }
@@ -49,13 +76,13 @@ int printf(const char* format, ...) {
                         int number = d / i;
                         if (number != 0) {
                             begining_found = true;
-                            if (putchar(48 + number) == EOF) {
+                            if (buffered_putchar(48 + number) == EOF) {
                                 return -1;
                             }
                             written++;
                         } else {
                             if (begining_found) {
-                                if (putchar('0') == EOF) {
+                                if (buffered_putchar('0') == EOF) {
                                     return -1;
                                 }
                                 written++;
@@ -67,7 +94,7 @@ int printf(const char* format, ...) {
             } else if (format_char == 'u') {
                 uint32_t u = va_arg(parameters, uint32_t);
                 if (u == 0) {
-                    if (putchar('0') == EOF) {
+                    if (buffered_putchar('0') == EOF) {
                         return -1;
                     }
                     written++;
@@ -77,13 +104,13 @@ int printf(const char* format, ...) {
                         uint32_t number = u / i;
                         if (number != 0) {
                             begining_found = true;
-                            if (putchar(48 + number) == EOF) {
+                            if (buffered_putchar(48 + number) == EOF) {
                                 return -1;
                             }
                             written++;
                         } else {
                             if (begining_found) {
-                                if (putchar('0') == EOF) {
+                                if (buffered_putchar('0') == EOF) {
                                     return -1;
                                 }
                                 written++;
@@ -96,12 +123,19 @@ int printf(const char* format, ...) {
                 i--;
             }
         } else {
-            if (putchar(cr_char) == EOF) {
+            if (buffered_putchar(cr_char) == EOF) {
                 return -1;
             }
             written++;
         }
     }
     va_end(parameters);
+
+    if (putchar_buffer_index != 0u) {
+        if (flush_putchar_buffer() == EOF) {
+            return -1;
+        }
+    }
+
     return written;
 }
