@@ -1,4 +1,5 @@
 #include <kernel/kernel_syscall.h>
+#include <kernel/pit/pit_timer.h>
 #include <kernel/scheduler.h>
 #include <kernel/tty.h>
 #include <stdio.h>
@@ -16,8 +17,17 @@ static int32_t sys_exit() {
 
 static int32_t sys_write(uint32_t fd, uint8_t* data, uint32_t size) {
     int32_t status = SYSCALL_STATUS_SUCCESS;
-
     if (fd == STDOUT) {
+#ifdef SIMPLOS_TEST_RUN
+        struct SystemTime current_time;
+        pitt_get_system_time(&current_time);
+        int count = kuts_printk("[%d][%d:%d:%d:%d] ", sch_current_pcb->pid,
+                                current_time.hours, current_time.minutes,
+                                current_time.seconds, current_time.milliseconds);
+
+        while (count < 18) count += kuts_printk(" ");
+        kuts_printk(": ");
+#endif
         tty_write((const char*)data, size);
     } else {
         status = SYSCALL_INVALID_FD;
