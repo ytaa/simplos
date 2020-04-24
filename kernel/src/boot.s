@@ -21,17 +21,39 @@ gdt_null:
 gdt_code:
   .2byte 0xFFFF
   .2byte 0
-  .byte 0
-  .byte 0b10011010
-  .byte 0b11001111
-  .byte 0
+  .byte  0
+  .byte  0b10011010
+  .byte  0b11001111
+  .byte  0
 gdt_data:
   .2byte 0xFFFF
   .2byte 0
-  .byte 0
-  .byte 0b10010010
-  .byte 0b11001111
-  .byte 0
+  .byte  0
+  .byte  0b10010010
+  .byte  0b11001111
+  .byte  0
+gdt_user_code:
+  .2byte 0xFFFF
+  .2byte 0
+  .byte  0
+  .byte  0b11111010
+  .byte  0b11001111
+  .byte  0
+gdt_user_data:
+  .2byte 0xFFFF
+  .2byte 0
+  .byte  0
+  .byte  0b11110010
+  .byte  0b11001111
+  .byte  0
+gdt_tss:
+  .byte  0x68
+  .byte  0
+  .2byte 0
+  .byte  0x80
+  .byte  0b11101001
+  .byte  0b00000000
+  .byte  0x80
 gdt_end:
 gdtr:
   .2byte gdt_end - gdt_start - 1
@@ -54,6 +76,7 @@ bootloader will jump to this position once the kernel has been loaded.
 _start:
   //setup GDT
   lgdt (gdtr)
+  
   mov $0x0010, %eax
   mov %eax, %ds
   mov %eax, %es
