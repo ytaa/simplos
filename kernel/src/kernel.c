@@ -1,3 +1,4 @@
+#include <boot/tss.h>
 #include <kernel/isr.h>
 #include <kernel/kernel_init.h>
 #include <kernel/kernel_utils.h>
@@ -27,7 +28,9 @@ uint32_t sbuf11[10];
 uint32_t sbuf22[10];
 
 void kernel_main(void) {
+    //tss_init();
     pg_init_paging();
+
     tty_init();
     ps2k_init();
     pitt_init();
