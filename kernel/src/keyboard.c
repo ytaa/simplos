@@ -308,7 +308,7 @@ void ps2k_init() {
 void ps2k_handle_irq1(uint8_t keycode) {
     if (keycode < 0x81) {
         keys[keycode].pressed = 1;
-        if (is_buffering /*&& keys[keycode].ascii != 0*/) {
+        if (is_buffering) {
             ps2k_buffered_key buffered_key = {keycode, 0};
             if (ps2k_is_pressed(PS2K_KEYCODE_LSHIFT) || ps2k_is_pressed(PS2K_KEYCODE_RSHIFT)) {
                 buffered_key.character = keys[keycode].s_ascii;

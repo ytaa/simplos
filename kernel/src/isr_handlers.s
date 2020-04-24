@@ -12,7 +12,6 @@
 .extern sch_is_running
 .extern irq_caller_esp
 
-//.extern stack_test1
 isr_idt_load:
     mov 4(%esp), %edx
     lidt (%edx)
@@ -22,24 +21,7 @@ isr_irq0:
     cli
     pusha
 
-    cmp $0, sch_is_running
-    jne isr_irq0_change_stack
-
     call isr_irq0_handler
-
-    popa
-    sti
-    iret
-isr_irq0_change_stack:
-    movl sch_current_pcb, %eax
-    movl %esp, 8(%eax)
-    movl (%eax), %esp
-
-    call isr_irq0_handler
-
-    movl sch_current_pcb, %eax
-    movl %esp, (%eax) 
-    movl 8(%eax), %esp
 
     popa
     sti
