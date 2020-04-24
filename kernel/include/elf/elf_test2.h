@@ -2,4 +2,4 @@
 #include <stdint.h>
 
 extern const uint32_t test2_elf_size;
-extern uint8_t test2_elf_buffer[22516];
+extern uint8_t test2_elf_buffer[26028];
