@@ -9,6 +9,8 @@ uint32_t pg_kernel_higher_half_page_tables[PG_KERNEL_HIGHER_HALF_PAGE_TABLE_AMOU
 uint32_t pg_processes_page_directories[SCH_MAX_LOADED_PROCESS][PG_PAGE_DIRECTORY_ENTRIES] __attribute__((aligned(4096)));
 uint32_t pg_processes_page_tables[SCH_MAX_LOADED_PROCESS][SCH_MAX_PROCESS_PAGE_TABLES][PG_PAGE_TABLE_ENTRIES] __attribute__((aligned(4096)));
 
+uint32_t *pg_target_page_directory = 0u;
+
 static void clear_directory(uint32_t *page_directory) {
     //set each entry to not present
     for (uint16_t i = 0; i < PG_PAGE_DIRECTORY_ENTRIES; i++) {
@@ -107,11 +109,13 @@ void pg_update_process_page_direcotry(uint32_t pid, uint32_t base_vaddr) {
 }
 
 void pg_load_kernel_page_directory() {
-    pg_load_page_directory(pg_kernel_page_directory);
+    pg_target_page_directory = pg_kernel_page_directory;
+    pg_load_page_directory();
 }
 
 void pg_load_process_page_directory(uint32_t pid) {
-    pg_load_page_directory(pg_processes_page_directories[pid]);
+    pg_target_page_directory = pg_processes_page_directories[pid];
+    pg_load_page_directory();
 }
 
 void pg_init_paging() {

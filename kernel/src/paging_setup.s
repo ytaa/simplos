@@ -1,12 +1,10 @@
 .text
 .globl pg_load_page_directory
+.extern pg_target_page_directory
+
 pg_load_page_directory:
-push %ebp
-mov %esp, %ebp
-mov 8(%esp), %eax
-mov %eax, %cr3
-mov %ebp, %esp
-pop %ebp
+movl pg_target_page_directory, %eax
+movl %eax, %cr3
 ret
 
 .text

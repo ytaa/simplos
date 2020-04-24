@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 //functions from paging_setup.s
-extern void pg_load_page_directory(uint32_t *);
+extern void pg_load_page_directory();
 extern void pg_enable_paging();
 
 #define PG_PAGE_DIRECTORY_ENTRIES 1024u
@@ -26,6 +26,8 @@ extern uint32_t pg_kernel_higher_half_page_tables[PG_KERNEL_HIGHER_HALF_PAGE_TAB
 
 extern uint32_t pg_processes_page_directories[SCH_MAX_LOADED_PROCESS][PG_PAGE_DIRECTORY_ENTRIES] __attribute__((aligned(4096)));
 extern uint32_t pg_processes_page_tables[SCH_MAX_LOADED_PROCESS][SCH_MAX_PROCESS_PAGE_TABLES][PG_PAGE_TABLE_ENTRIES] __attribute__((aligned(4096)));
+
+extern uint32_t *pg_target_page_directory;
 
 void pg_init_paging();
 
