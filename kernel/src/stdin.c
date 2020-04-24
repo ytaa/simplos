@@ -16,9 +16,7 @@ void stdin_update() {
         if (key.character != 0) {
             if (key.character == '\n') {
                 //notify processes waitning for user input
-                sch_flush_input((uint8_t *)stdin_buffer, buffered_characters);
-                tty_put_char(key.character);
-                buffered_characters = 0;
+                stdin_flush();
             } else if (key.character == BACKSPACE_ASCII) {
                 if (buffered_characters > 0) {
                     tty_backspace();
@@ -43,4 +41,13 @@ void stdin_update() {
 }
 
 void stdin_flush() {
+    //notify processes waitning for user input
+    tty_put_char('\n');
+    sch_flush_input((uint8_t *)stdin_buffer, buffered_characters);
+    stdin_clear();
+}
+
+void stdin_clear() {
+    buffered_characters = 0;
+    stdin_buffer[buffered_characters] = '\0';
 }

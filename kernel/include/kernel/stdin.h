@@ -5,4 +5,6 @@ void stdin_update();
 
 void stdin_flush();
 
+void stdin_clear();
+
 #endif
