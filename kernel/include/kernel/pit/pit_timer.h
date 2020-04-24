@@ -3,12 +3,12 @@
 
 #include <stdint.h>
 
-#define PITT_CH0_FREQUENCY_HZ ((uint32_t)100)  //max: 1000
+#define PITT_CH0_FREQUENCY_HZ ((uint32_t)100)  //min:18, max: 1000
 #define PITT_CH0_PROGRAM_MODE_VALUE 0x36
 #define PITT_CH0_PORT 0x40
 
 #define PITT_MODE_PORT 0x43
-#define PITT_RELOAD_DENOMINATOR ((uint32_t)1193182)
+#define PITT_RELOAD_BASE_FREQUENCY ((uint32_t)1193182)
 
 #define PITT_MAX_MS 1000u
 #define PITT_MAX_SEC 60u

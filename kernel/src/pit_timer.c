@@ -19,9 +19,9 @@ void pitt_init(void) {
         //program the PIT channel 0 to requested frequency
 
         //calculate reload value: reload = 1193182 / freq
-        uint16_t reload = PITT_RELOAD_DENOMINATOR / PITT_CH0_FREQUENCY_HZ;
+        uint16_t reload = PITT_RELOAD_BASE_FREQUENCY / PITT_CH0_FREQUENCY_HZ;
 
-        //select chanel for programming
+        //select timer mode
         outb(PITT_MODE_PORT, PITT_CH0_PROGRAM_MODE_VALUE);
 
         //send low byte
